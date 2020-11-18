@@ -342,8 +342,8 @@ export const reqspecsUpdate = (user) => {
 //添加 
 export const reqgoodsAdd = (user) => {
     let d = new FormData()
-    for(let i in user){
-        d.append(i,user[i])
+    for (let i in user) {
+        d.append(i, user[i])
     }
     return axios({
         url: baseUrl + "/api/goodsadd",
@@ -392,8 +392,8 @@ export const reqgoodsDetail = (id) => {
 //修改数据
 export const reqgoodsUpdate = (user) => {
     let d = new FormData()
-    for(let i in user){
-        d.append(i,user[i])
+    for (let i in user) {
+        d.append(i, user[i])
     }
     return axios({
         url: baseUrl + "/api/goodsedit",
@@ -406,26 +406,142 @@ export const reqgoodsUpdate = (user) => {
 
 
 // ===========会员接口 开始===================
-export const reqVipList=()=>{
+export const reqVipList = () => {
     return axios({
-        url:baseUrl+"/api/memberlist",
-        method:"get"
+        url: baseUrl + "/api/memberlist",
+        method: "get"
     })
 }
-export const reqVipDetail=(uid)=>{
+export const reqVipDetail = (uid) => {
     return axios({
-        url:baseUrl+"/api/memberinfo",
-        method:"get",
-        params:{
-            uid:uid
+        url: baseUrl + "/api/memberinfo",
+        method: "get",
+        params: {
+            uid: uid
         }
     })
 }
-export const reqVipUpdate=(user)=>{
+export const reqVipUpdate = (user) => {
     return axios({
-        url:baseUrl+"/api/memberedit",
-        method:"post",
-        data:qs.stringify(user)
+        url: baseUrl + "/api/memberedit",
+        method: "post",
+        data: qs.stringify(user)
     })
 }
 // ===========会员接口 结束===================
+// ===========轮播图接口 开始==================
+
+//添加
+export const reqBannerAdd = (user) => {
+    let d = new FormData()
+    for (let i in user) {
+        d.append(i, user[i])
+    }
+    return axios({
+        url: baseUrl + "/api/banneradd",
+        method: "post",
+        data: d
+    })
+}
+
+//获取轮播图列表
+export const reqBannerList = () => {
+    return axios({
+        url: baseUrl + "/api/bannerlist",
+        method: "get"
+    })
+}
+
+//获取一条数据
+export const reqBannerDetail = (id) => {
+    return axios({
+        url: baseUrl + "/api/bannerinfo",
+        method: "get",
+        params: {
+            id: id
+        }
+    })
+}
+
+
+//修改
+export const reqBannerUpdate = (user) => {
+    let d = new FormData()
+    for (let i in user) {
+        d.append(i, user[i])
+    }
+    return axios({
+        url: baseUrl + "/api/banneredit",
+        method: "post",
+        data: d
+    })
+}
+
+//删除
+export const reqBannerDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/bannerdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+// ===========轮播图接口 结束==================
+
+// ===========秒杀活动接口 开始==================
+
+//添加
+export const reqseckAdd = (user) => {
+
+    return axios({
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data: qs.stringify(user)
+    })
+}
+
+//获取轮播图列表
+export const reqseckList = () => {
+    return axios({
+        url: baseUrl + "/api/secklist",
+        method: "get"
+    })
+}
+
+//获取一条数据
+export const reqseckDetail = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckinfo",
+        method: "get",
+        params:{
+            id: id
+        }
+    })
+}
+
+
+//修改
+export const reqseckUpdate = (user) => {
+
+    return axios({
+        url: baseUrl + "/api/seckedit",
+        method: "post",
+        data: qs.stringify(user)
+    })
+}
+
+//删除
+export const reqseckDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+
+
+
+// ===========秒杀活动接口 结束==================

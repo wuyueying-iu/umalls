@@ -19,8 +19,8 @@ const mutations = {
 }
 
 const actions = {
-    reqList(context,bool) {
-        let params = bool?{}:{ page: context.state.page, size: context.state.size }
+    reqList(context, bool) {
+        let params = bool ? {} : { page: context.state.page, size: context.state.size }
         reqspecsList(params).then(res => {
             let list = res.data.list ? res.data.list : []
             if (list.length == 0 && context.state.page > 1) {

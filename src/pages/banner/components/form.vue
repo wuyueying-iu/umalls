@@ -1,15 +1,15 @@
 <template>
   <div>
-    <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
+    <el-dialog :title="info.title" :visible.sync="info.isshow">
       <el-form :model="user">
-        <el-form-item label="规格名称" label-width="120px">
-          <el-input v-model="user.specsname" autocomplete="off"></el-input>
+        <el-form-item label="标题" label-width="120px">
+          <el-input v-model="user.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="规格属性" label-width="120px" v-for="(item,index) in attrArr" :key="index">
-          <div class="line">
-            <el-input v-model="item.value" autocomplete="off"></el-input>
-            <el-button type="primary" v-if="index===0" @click="addArr">添加规格属性</el-button>
-            <el-button type="danger" v-else @click="delArr(index)">删除</el-button>
+        <el-form-item label="图片" label-width="120px" v-if="user.pid!==0">
+          <div class="myupload">
+            <h3>+</h3>
+            <img class="img" v-if="imgUrl" :src="imgUrl" />
+            <input type="file" class="ipt" @change="changeFile" />
           </div>
         </el-form-item>
         <el-form-item label="状态" label-width="120px">
@@ -18,7 +18,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" v-if="info.title=='添加规格'" @click="add">添 加</el-button>
+        <el-button type="primary" v-if="info.title=='添加轮播图'" @click="add">添 加</el-button>
         <el-button type="primary" v-else @click="update">修 改</el-button>
       </div>
     </el-dialog>
@@ -28,9 +28,9 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import {
-  reqspecsAdd,
-  reqspecsDetail,
-  reqspecsUpdate
+  reqBannerAdd,
+  reqBannerDetail,
+  reqBannerUpdate
 } from "../../../utils/http";
 import { successAlert, errorAlert } from "../../../utils/alert";
 import path from "path";
@@ -39,45 +39,54 @@ export default {
   data() {
     return {
       user: {
-        specsname: "",
-        attrs: "",
+        title: "",
+        img: null,
         status: 1
       },
-      attrArr: [{ value: "" }]
+      imgUrl: ""
     };
   },
   computed: {
     ...mapGetters({
-      specsList: "specs/list"
+      bannerList: "banner/list"
     })
   },
   methods: {
     ...mapActions({
-      reqList: "specs/reqList",
-      reqCount: "specs/reqCount"
+      reqBannerList: "banner/reqList"
     }),
-    delArr(index) {
-      this.attrArr.splice(index, 1);
-    },
-    addArr() {
-      this.attrArr.push({
-        value: ""
-      });
-    },
     cancel() {
       this.info.isshow = false;
     },
+    changeFile(e) {
+      let file = e.target.files[0];
+
+      if (file.size > 2 * 1024 * 1024) {
+        errorAlert("图片大小不能超过2M");
+        return;
+      }
+
+      let extname = path.extname(file.name);
+      let arr = [".jpg", ".jpeg", ".png", ".gif"];
+      if (!arr.includes(extname)) {
+        errorAlert("请上传正确的图片格式");
+        return;
+      }
+
+      this.imgUrl = URL.createObjectURL(file);
+      this.user.img = file;
+    },
     empty() {
       this.user = {
-        specsname: "",
-        attrs: "",
+        title: "",
+        img: null,
         status: 1
       };
-      this.attrArr = [{ value: "" }];
+      this.imgUrl = "";
     },
     add() {
-      this.user.attrs = JSON.stringify(this.attrArr.map(item => item.value));
-      reqspecsAdd(this.user).then(res => {
+      reqBannerAdd(this.user).then(res => {
+          console.log(res)
         if (res.data.code == 200) {
           //弹出成功弹框
           successAlert("添加成功");
@@ -85,41 +94,34 @@ export default {
           this.cancel();
           this.empty();
           //通知父组件刷新页面
-          this.reqList();
-          this.reqCount();
+          this.reqBannerList();
         }
       });
     },
     getOne(id) {
-      reqspecsDetail(id).then(res => {
-        this.user = res.data.list[0];
-        this.attrArr = JSON.parse(this.user.attrs).map(item => ({
-          value: item
-        }));
+      reqBannerDetail(id).then(res => {
+          console.log(res)
+        this.user = res.data.list;
+        //
+        this.imgUrl = this.$imgPre + this.user.img;
+        //补ids
+        this.user.id = id;
       });
     },
     update() {
-      this.user.attrs = JSON.stringify(this.attrArr.map(item => item.value));
-      reqspecsUpdate(this.user).then(res => {
+      reqBannerUpdate(this.user).then(res => {
         if (res.data.code === 200) {
           successAlert("修改成功");
 
           this.cancel();
           this.empty();
-          this.reqList();
+          //通知父组件刷新页面
+          this.reqBannerList();
         }
       });
-    },
-    closed() {
-      if (this.info.title == "编辑规格") {
-        this.empty();
-      }
     }
   },
-  mounted() {
-      this.reqList()
-      this.reqCount()
-  }
+  mounted() {}
 };
 </script>
 
@@ -154,14 +156,5 @@ export default {
   position: absolute;
   left: 0;
   top: 0;
-}
-.line {
-  display: flex;
-}
-.line .el-input {
-  flex: 1;
-}
-.line .el-button {
-  width: auto;
 }
 </style>
